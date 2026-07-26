@@ -62,6 +62,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      user-select: none;
     }
 
     select {
@@ -71,6 +72,7 @@
       padding: 5px 8px;
       border-radius: 4px;
       outline: none;
+      cursor: pointer;
     }
 
     button {
@@ -131,7 +133,7 @@
 
   <iframe 
     id="editor-frame" 
-    src="https://turbowarp.org/1080608744/embed?fps=60&interpolate=true"
+    src="https://turbowarp.org/60917032/embed?fps=60&interpolate=true"
     allowtransparency="true"
     allow="autoplay; microphone; camera; focus-without-user-activation *; speaker; USB; MIDI"
     allowfullscreen>
@@ -144,11 +146,11 @@
       const interpolate = document.getElementById('interpolate-input').checked;
       const hqpen = document.getElementById('hqpen-input').checked;
 
-      // Extract Project ID
+      // Extract Project ID from URL or raw number
       const match = rawInput.match(/\d+/);
       const projectId = match ? match[0] : '60917032';
 
-      // Build valid TurboWarp embed URL
+      // Build parameters
       const params = new URLSearchParams();
       params.append('fps', fps);
       if (interpolate) params.append('interpolate', 'true');
@@ -156,9 +158,16 @@
 
       const targetUrl = `https://turbowarp.org/${projectId}/embed?${params.toString()}`;
 
-      // Update iframe
+      // Update iframe source
       document.getElementById('editor-frame').src = targetUrl;
     }
+
+    // Allow pressing "Enter" key inside input field to trigger load
+    document.getElementById('project-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        loadProject();
+      }
+    });
   </script>
 
 </body>
