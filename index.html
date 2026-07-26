@@ -3,22 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>scratdid - Scratch Mod Editor</title>
+  <title>scratdid - Modded Editor</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    html, body {
+
+    body, html {
       width: 100%;
       height: 100%;
       overflow: hidden;
       background-color: #111111;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
     }
-    iframe {
+
+    /* Top Control Bar */
+    #control-bar {
+      height: 50px;
+      background-color: #1e1e1e;
+      border-bottom: 1px solid #333333;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .title {
+      font-weight: bold;
+      color: #ff4c4c;
+      font-size: 1.1rem;
+      margin-right: 8px;
+    }
+
+    input[type="text"] {
+      background: #111111;
+      border: 1px solid #444444;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      flex-grow: 1;
+      max-width: 350px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #ff4c4c;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: #cccccc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    select, input[type="number"] {
+      background: #111111;
+      border: 1px solid #444444;
+      color: #ffffff;
+      padding: 5px 8px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    button {
+      background-color: #ff4c4c;
+      color: white;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #cc3333;
+    }
+
+    /* Editor Viewport */
+    #editor-frame {
       width: 100%;
-      height: 100%;
+      height: calc(100% - 50px);
       border: none;
       display: block;
     }
@@ -26,11 +99,76 @@
 </head>
 <body>
 
+  <div id="control-bar">
+    <span class="title">scratdid</span>
+
+    <input 
+      type="text" 
+      id="project-input" 
+      placeholder="Paste Scratch/TurboWarp Link or Project ID..."
+      value="https://scratch.mit.edu/projects/60917032"
+    >
+
+    <label for="fps-input">FPS:
+      <select id="fps-input">
+        <option value="30">30 FPS</option>
+        <option value="60" selected>60 FPS</option>
+        <option value="120">120 FPS</option>
+        <option value="240">240 FPS</option>
+      </select>
+    </label>
+
+    <label>
+      <input type="checkbox" id="interpolate-input" checked> Smooth Motion
+    </label>
+
+    <label>
+      <input type="checkbox" id="hqpen-input"> HQ Pen
+    </label>
+
+    <button onclick="loadProject()">Load Editor</button>
+  </div>
+
   <iframe 
-    src="https://turbowarp.org/editor?fps=60&hqpen=true&interpolate=true" 
+    id="editor-frame" 
+    src="https://turbowarp.org/editor?fps=60&interpolate=true"
     allow="autoplay; microphone; camera; focus-without-user-activation *; speaker; USB; MIDI"
     allowfullscreen>
   </iframe>
+
+  <script>
+    function loadProject() {
+      const rawInput = document.getElementById('project-input').value.trim();
+      const fps = document.getElementById('fps-input').value;
+      const interpolate = document.getElementById('interpolate-input').checked;
+      const hqpen = document.getElementById('hqpen-input').checked;
+
+      // Extract Project ID if full URL was pasted
+      let projectId = '';
+      const match = rawInput.match(/\d+/);
+      if (match) {
+        projectId = match[0];
+      }
+
+      // Build the TurboWarp Editor URL with dynamic parameters
+      let targetUrl = `https://turbowarp.org/editor`;
+      
+      if (projectId) {
+        targetUrl = `https://turbowarp.org/${projectId}/editor`;
+      }
+
+      // Append custom options
+      const params = new URLSearchParams();
+      params.append('fps', fps);
+      if (interpolate) params.append('interpolate', 'true');
+      if (hqpen) params.append('hqpen', 'true');
+
+      targetUrl += `?${params.toString()}`;
+
+      // Update the iframe
+      document.getElementById('editor-frame').src = targetUrl;
+    }
+  </script>
 
 </body>
 </html>
