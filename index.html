@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>scratdid - Modded Editor</title>
+  <title>scratdid - Custom Player & Settings</title>
   <style>
     * {
       margin: 0;
@@ -64,7 +64,7 @@
       gap: 6px;
     }
 
-    select, input[type="number"] {
+    select {
       background: #111111;
       border: 1px solid #444444;
       color: #ffffff;
@@ -88,7 +88,7 @@
       background-color: #cc3333;
     }
 
-    /* Editor Viewport */
+    /* Viewport */
     #editor-frame {
       width: 100%;
       height: calc(100% - 50px);
@@ -106,7 +106,7 @@
       type="text" 
       id="project-input" 
       placeholder="Paste Scratch/TurboWarp Link or Project ID..."
-      value="https://scratch.mit.edu/projects/60917032"
+      value="60917032"
     >
 
     <label for="fps-input">FPS:
@@ -126,12 +126,13 @@
       <input type="checkbox" id="hqpen-input"> HQ Pen
     </label>
 
-    <button onclick="loadProject()">Load Editor</button>
+    <button onclick="loadProject()">Load</button>
   </div>
 
   <iframe 
     id="editor-frame" 
-    src="https://turbowarp.org/editor?fps=60&interpolate=true"
+    src="https://turbowarp.org/60917032/embed?fps=60&interpolate=true"
+    allowtransparency="true"
     allow="autoplay; microphone; camera; focus-without-user-activation *; speaker; USB; MIDI"
     allowfullscreen>
   </iframe>
@@ -143,29 +144,19 @@
       const interpolate = document.getElementById('interpolate-input').checked;
       const hqpen = document.getElementById('hqpen-input').checked;
 
-      // Extract Project ID if full URL was pasted
-      let projectId = '';
+      // Extract Project ID
       const match = rawInput.match(/\d+/);
-      if (match) {
-        projectId = match[0];
-      }
+      const projectId = match ? match[0] : '60917032';
 
-      // Build the TurboWarp Editor URL with dynamic parameters
-      let targetUrl = `https://turbowarp.org/editor`;
-      
-      if (projectId) {
-        targetUrl = `https://turbowarp.org/${projectId}/editor`;
-      }
-
-      // Append custom options
+      // Build valid TurboWarp embed URL
       const params = new URLSearchParams();
       params.append('fps', fps);
       if (interpolate) params.append('interpolate', 'true');
       if (hqpen) params.append('hqpen', 'true');
 
-      targetUrl += `?${params.toString()}`;
+      const targetUrl = `https://turbowarp.org/${projectId}/embed?${params.toString()}`;
 
-      // Update the iframe
+      // Update iframe
       document.getElementById('editor-frame').src = targetUrl;
     }
   </script>
