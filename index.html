@@ -168,6 +168,18 @@
         loadProject();
       }
     });
+
+    // Check URL parameters on page load (e.g. ?id=12345, ?=12345, or ?12345)
+    window.addEventListener('DOMContentLoaded', () => {
+      const search = window.location.search;
+      if (search) {
+        const match = search.match(/\d+/);
+        if (match) {
+          document.getElementById('project-input').value = match[0];
+          loadProject();
+        }
+      }
+    });
   </script>
 
 </body>
